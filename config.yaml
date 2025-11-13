@@ -1,0 +1,134 @@
+# B-Free Configuration File
+
+# Data Generation Settings
+data_generation:
+  # Path to COCO dataset
+  coco_root: "./data/COCO_real_512"
+  coco_train_annotations: "./data/COCO_real_512/annotations/annotations/instances_train2017.json"
+  coco_train_images: "./data/COCO_real_512/COCO_real_512"
+  
+  # Output directories
+  output_root: "./data"
+  self_conditioned_dir: "./data/SD2.1_selfconditioned/SD2.1_selfconditioned"
+  self_conditioned_origbg_dir: "./data/SD2.1_selfconditioned_origBG/SD2.1_selfconditioned_origBG"
+  inpaint_samecat_dir: "./data/SD2.1_inpainted_samecat/SD2.1_inpainted_samecat"
+  inpaint_samecat_origbg_dir: "./data/SD2.1_inpainted_samecat_origBG/SD2.1_inpainted_samecat_origBG"
+  inpaint_diffcat_dir: "./data/SD2.1_inpainted_diffcat/SD2.1_inpainted_diffcat"
+  inpaint_diffcat_origbg_dir: "./data/SD2.1_inpainted_diffcat_origBG/SD2.1_inpainted_diffcat_origBG"
+  masks_dir: "./data/masks_and_bbox/mask"
+  bbox_dir: "./data/masks_and_bbox/bbox"
+  
+  # Stable Diffusion settings
+  model_id: "stabilityai/stable-diffusion-2-inpainting"
+  num_inference_steps: 25
+  guidance_scale: 7.5
+  
+  # Processing settings
+  batch_size: 4
+  num_workers: 4
+  device: "cuda"
+  seed: 42
+  
+  # Image settings
+  max_images: null  # null means process all images
+  image_size: 512
+
+# Training Settings
+training:
+  # Model architecture
+  model_name: "facebook/dinov2-with-registers-large"  # DINOv2 with registers
+  num_classes: 2
+  use_lora: true  # Set to true to enable LoRA (reduces memory by ~75%)
+  
+  # LoRA settings (only used if use_lora: true)
+  lora:
+    r: 32  # Rank of LoRA matrices (4, 8, 16, 32). Higher = more capacity but more params
+    alpha: 64  # Scaling factor (typically 2*r)
+    dropout: 0.1  # LoRA dropout for regularization
+    target_modules: ["query", "value"]  # Which modules to apply LoRA (can add "key", "dense")
+  
+  # Training hyperparameters
+  batch_size: 8
+  num_epochs: 20
+  learning_rate: 0.0001  # Can increase to 1e-4 with LoRA
+  weight_decay: 0.05
+  warmup_epochs: 2
+  
+  # Image processing
+  crop_size: 504
+  num_crops_train: 1
+  num_crops_val: 5
+  
+  # Data augmentation
+  use_blur: true
+  blur_kernel_range: [0, 4]
+  use_jpeg: true
+  jpeg_quality_range: [60, 100]
+  use_resize: true
+  resize_scale_range: [0.5, 1.5]
+  use_cutout: true
+  use_noise: true
+  use_jitter: true
+  
+  # Data splits
+  train_ratio: 0.9
+  val_ratio: 0.1
+  
+  # Multi-GPU settings
+  distributed: true
+  num_gpus: null  # null means use all available GPUs
+  
+  # Checkpointing
+  checkpoint_dir: "./checkpoints_4"
+  save_every_n_epochs: 1
+  resume_from: null
+  
+  # Logging
+  use_wandb: false
+  wandb_project: "b-free"
+  wandb_entity: null
+  log_every_n_steps: 50
+  
+  # Optimization
+  optimizer: "adamw"
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+  mixed_precision: true  # fp16 training
+
+# Evaluation Settings
+evaluation:
+  # Test datasets
+  test_datasets:
+    - name: "synthbuster"
+      path: "./data/synthbuster"
+    - name: "genimage"
+      path: "./data/genimage"
+    - name: "wildrif"
+      path: "./data/wildrif"
+  
+  # Inference settings
+  batch_size: 32
+  crop_size: 504
+  num_crops: 5  # Average predictions from multiple crops
+  
+  # Metrics
+  threshold: 0.5
+  num_ece_bins: 15
+  
+  # Output
+  results_dir: "./results"
+  save_predictions: true
+
+# Vast.ai Settings
+vast:
+  # Persistent execution
+  use_tmux: true
+  tmux_session_name: "bfree"
+  
+  # Auto-restart on failure
+  auto_restart: true
+  max_retries: 3
+  
+  # Monitoring
+  log_dir: "./logs"
+  save_logs: true
