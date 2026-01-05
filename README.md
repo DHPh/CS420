@@ -1,4 +1,4 @@
-## Reproduction of "A Bias-Free Training Paradigm for More General AI-generated Image Detection" (CVPR 2025) ([paper](https://arxiv.org/pdf/2412.17671))
+## Reproduction of "A Bias-Free Training Paradigm for More General AI-generated Image Detection" (CVPR 2025) ([paper](https://arxiv.org/pdf/2412.17671)) with LoRA
 
 Best model and its logs in this [link](https://drive.google.com/drive/folders/1hSYKXaqQSOAyPXlH4qnZbT82f40dkVqc?usp=sharing)
 
